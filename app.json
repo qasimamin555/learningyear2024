@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "LearningYears",
+    "slug": "LearningYears",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/Logo/SplashLogo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/Logo/SplashLogo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0179EF"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/Logo/SplashLogo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.usmanshahid161.LearningYears"
+    },
+    "web": {
+      "favicon": "./assets/Logo/SplashLogo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "686b1e5b-c91d-4b17-be07-cae0606cf752"
+      }
+    }
+  }
+}
