@@ -13,7 +13,7 @@ export default function ChildBottomSheet(props) {
     }, []);
 
     const onSelector = (id) => {
-        if(!checked.includes(id)) {
+        if (!checked.includes(id)) {
             setChecked([...checked, id])
         } else {
             let filterCheckBox = checked.filter((v) => v !== id);
@@ -21,10 +21,28 @@ export default function ChildBottomSheet(props) {
         }
     };
 
-    return <TouchableOpacity onPress={() => props.mode !== "addBooking" && navigation.navigate("addChildForm", {
-        headerName: "Child Information",
-        isAdd: false
-    })}>
+    function convertMillisecondsToYearsMonthsDays(milliseconds) {
+        const millisecondsInYear = 31536000000; // 365 days
+        const millisecondsInMonth = 2628000000; // 30.417 days
+        const millisecondsInDay = 86400000;
+
+        let years = Math.floor(milliseconds / millisecondsInYear);
+        let months = Math.floor((milliseconds % millisecondsInYear) / millisecondsInMonth);
+        let days = Math.floor(((milliseconds % millisecondsInYear) % millisecondsInMonth) / millisecondsInDay);
+
+        return {years, months, days};
+    }
+
+    let {years, months, days} = convertMillisecondsToYearsMonthsDays(new Date() - new Date(props?.data?.age));
+    return <TouchableOpacity onPress={() => {
+        closeBottomSheet()
+        props.mode !== "addBooking" && navigation.navigate("addChildForm", {
+            headerName: "Child Information",
+            isAdd: false,
+            data: props.data,
+            update: true,
+        })
+    }}>
         <View style={{
             flexDirection: "row",
             marginTop: 10,
@@ -57,7 +75,7 @@ export default function ChildBottomSheet(props) {
             </View>
             <View>
                 <Text style={{color: "#263238", fontWeight: "bold", marginTop: 4}}>{props?.childName}</Text>
-                <Text style={{color: "#FF912C"}}>{props?.data?.age}</Text>
+                <Text style={{color: "#FF912C"}}>{days + " days " + months + " months " + years + " years"}</Text>
             </View>
         </View>
     </TouchableOpacity>

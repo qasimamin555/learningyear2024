@@ -9,11 +9,16 @@ import man from '../../../assets/man/man.jpg'
 import {Checkbox, SegmentedButtons} from "react-native-paper";
 import {GlobalContext} from "../../store";
 import {acceptBookingStatus, getBookingsRequest, getCareTakers, getToken} from "../../actions";
-import {SET_BOOKING_REQUEST_DATA, SET_CARE_TAKERS, SET_RE_CALLING_STATUS} from "../../store/const";
+import {
+    SET_BOOKING_REQUEST_DATA,
+    SET_CARE_TAKERS,
+    SET_RE_CALLING_STATUS,
+    SET_UPCOMING_REQUEST_DATA
+} from "../../store/const";
 
 export default function CareTakerHome({navigation}) {
     const [globalState, dispatch] = useContext(GlobalContext);
-    const {bookingRequestsData, reCallStatus} = globalState
+    const {bookingRequestsData, reCallStatus, upcomingRequestData} = globalState
 
     const [state, setState] = useState({
         isBottomSheetOpen: false,
@@ -25,44 +30,55 @@ export default function CareTakerHome({navigation}) {
 
     useEffect(() => {
         if (!(bookingRequestsData?.length) || reCallStatus) {
-            getBookings()
+            getBookings({acceptStatus: false})
         }
-    }, [bookingRequestsData, reCallStatus]);
+        if (!(upcomingRequestData?.length) || reCallStatus) {
+            console.log("Is API calling ......................................................")
+            let filter = {
+                acceptStatus: true,
+                caretakerId: true
+            }
+            getBookings(filter)
+        }
+    }, [bookingRequestsData, reCallStatus, upcomingRequestData]);
 
-    const getBookings = () => {
+    const getBookings = (filter) => {
         getToken()
             .then(token => {
                 setState({...state, loading: true})
-                getBookingsRequest(token)
+                getBookingsRequest(token, filter)
                     .then((response) => {
                         if (response?.success && response?.data?.result?.length) {
-                            dispatch({type: SET_BOOKING_REQUEST_DATA, payload: response.data.result})
-                            dispatch({type: SET_RE_CALLING_STATUS, payload: false})
+                            if (response?.['bookingStatus'] === "new") {
+                                dispatch({type: SET_BOOKING_REQUEST_DATA, payload: response.data.result})
+                            } else {
+                                dispatch({type: SET_UPCOMING_REQUEST_DATA, payload: response.data.result})
+                            }
                             setState({...state, loading: false})
+                            dispatch({type: SET_RE_CALLING_STATUS, payload: false})
+
                         } else {
                             setState({...state, loading: false})
                         }
                     })
                     .catch(error => {
                         setState({...state, loading: false})
-                        console.log(error, "QQQQQQQQQQQQQQQQQ")
                     })
             })
     }
 
     const acceptBooking = async (data) => {
-        console.log(data._id, "************************")
         let token = await getToken();
         let updateId = data._id;
 
-        console.log(token, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
         if (token && updateId) {
             acceptBookingStatus(token, updateId)
                 .then(response => {
-                    console.log(response, '!!!!!!!!!!!!!!!!!!!!!!!')
                     if (response?.success) {
-                        dispatch({type: SET_RE_CALLING_STATUS, payload: true});
+                        // dispatch({type: SET_RE_CALLING_STATUS, payload: true});
                         dispatch({type: SET_BOOKING_REQUEST_DATA, payload: []})
+                        dispatch({type: SET_UPCOMING_REQUEST_DATA, payload: []})
+
                     }
                 })
         }
@@ -72,8 +88,9 @@ export default function CareTakerHome({navigation}) {
     const renderNewBookings = () => {
         if (bookingRequestsData?.length) {
             return bookingRequestsData.map((data, index) => {
+                console.log(JSON.stringify(data, null, 2))
                 return <TouchableOpacity
-                    style={{marginBottom: 10}}
+                    style={{marginBottom: 15}}
                     key={index}
                     onPress={() => navigation.navigate('ConfirmationBooking', {
                         headerName: "New Booking",
@@ -90,22 +107,18 @@ export default function CareTakerHome({navigation}) {
                                 <Text style={{fontSize: 14, fontWeight: 'bold'}}>Booking Request</Text>
                                 <Text style={{fontSize: 10, fontWeight: 'bold'}}>View</Text>
                             </View>
+                            <Text style={{color: "#000"}}>{data?._id}</Text>
                             <Text style={{color: "#FF912C"}}>{data?.parentData?.name}</Text>
                             <View style={{flexDirection: 'row', gap: 4, alignItems: "center", marginTop: 10}}>
                                 <Ionicons color={'#FF912C'} size={14} name="time"/>
-                                <Text style={{color: '#727272'}}>Booking Date</Text>
-                                <Text style={{color: '#727272'}}>{data.requestSendingTime}</Text>
+                                <Text style={{color: '#727272'}}>Booking From :</Text>
+                                <Text style={{color: '#727272'}}>{data.requestFrom}</Text>
                             </View>
-                            {/*<View style={{flexDirection: 'row', gap: 4, alignItems: "center"}}>*/}
-                            {/*    <Ionicons color={'#FF912C'} size={14} name="time"/>*/}
-                            {/*    <Text style={{color: '#727272'}}>To :</Text>*/}
-                            {/*    <Text style={{color: '#727272'}}>24 Dec 2023, 05:00 PM</Text>*/}
-                            {/*</View>*/}
-                            <Text
-                                onPress={() => navigation.navigate("chat", {
-                                    headerName: "Chat"
-                                })}
-                                style={{fontWeight: "bold", marginTop: 10, color: "#FFB906"}}>Contact Parent</Text>
+                            <View style={{flexDirection: 'row', gap: 4, alignItems: "center"}}>
+                                <Ionicons color={'#FF912C'} size={14} name="time"/>
+                                <Text style={{color: '#727272'}}>Booking To :</Text>
+                                <Text style={{color: '#727272'}}>{data.requestTo}</Text>
+                            </View>
                             <View style={{
                                 flexDirection: "row",
                                 width: "100%",
@@ -131,75 +144,60 @@ export default function CareTakerHome({navigation}) {
     }
 
     const renderUpcomingBookings = () => {
-        Alert.alert("Sorry!", "Upcoming Bookings is under development");
-        return <>
-            <View style={[BottomSheetStyling.headingContainer, {backgroundColor: "white"}]}>
-                <View style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
-                    width: "80%",
-                    overflow: "hidden"
-                }}>
-                    <Text style={BottomSheetStyling.headingTitle}>Upcoming Bookings</Text>
-                    <View style={BottomSheetStyling.hr}></View>
-                </View>
-                <View style={[BottomSheetStyling.rightCircle, {backgroundColor: '#FF912C'}]}/>
-            </View>
+        if (upcomingRequestData?.length) {
+            return upcomingRequestData.map((val, index) => {
+                let {parentData: {name}, requestSendingTime} = val;
 
-            <TouchableOpacity onPress={() => navigation.navigate('ViewBooking', {
-                headerName: "Upcoming Booking"
-            })}>
-                <View style={{
-                    padding: 16,
-                    backgroundColor: "#CEFFD9",
-                    borderRadius: 10,
-                    flexDirection: "row"
-                }}>
-                    <Image style={{
-                        height: 50,
-                        width: 50,
-                        borderRadius: 25,
-                        borderColor: "black",
-                        borderWidth: 1
-                    }}
-                           source={man}
-                    />
-                    <View style={{width: "84%", padding: 10, paddingTop: 0}}>
-                        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                            <View>
-                                <Text style={{fontSize: 14, fontWeight: 'bold'}}>Parent Name</Text>
-                                <Text style={{color: "#FF912C", fontSize: 12, fontWeight: 'bold'}}>Children
-                                    name</Text>
+                return <TouchableOpacity
+                    style={{marginBottom: 10}}
+                    key={index}
+                    onPress={() => navigation.navigate('ViewBooking', {
+                        headerName: "Upcoming Booking"
+                    })}>
+                    <View style={{
+                        padding: 16,
+                        backgroundColor: "#CEFFD9",
+                        borderRadius: 10,
+                        flexDirection: "row"
+                    }}>
+                        <Image style={{
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            borderColor: "black",
+                            borderWidth: 1
+                        }}
+                               source={man}
+                        />
+                        <View style={{width: "84%", padding: 10, paddingTop: 0}}>
+                            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                                <View>
+                                    <Text style={{fontSize: 14, fontWeight: 'bold'}}>Upcoming Request</Text>
+                                    <Text style={{color: "#FF912C", fontSize: 12, fontWeight: 'bold'}}>{name}</Text>
+                                </View>
+                                <Text style={{fontSize: 10, fontWeight: 'bold'}}>View</Text>
                             </View>
-                            <Text style={{fontSize: 10, fontWeight: 'bold'}}>View</Text>
-                        </View>
-                        <View style={{flexDirection: 'row', gap: 4, alignItems: "center", marginTop: 10}}>
-                            <Ionicons color={'#FF912C'} size={14} name="time"/>
-                            <Text style={{color: '#727272'}}>From :</Text>
-                            <Text style={{color: '#727272'}}>24 Dec 2023, 05:00 PM</Text>
-                        </View>
-                        <View style={{flexDirection: 'row', gap: 4, alignItems: "center"}}>
-                            <Ionicons color={'#FF912C'} size={14} name="time"/>
-                            <Text style={{color: '#727272'}}>To :</Text>
-                            <Text style={{color: '#727272'}}>24 Dec 2023, 05:00 PM</Text>
+                            <View style={{flexDirection: 'row', gap: 4, alignItems: "center", marginTop: 10}}>
+                                <Ionicons color={'#FF912C'} size={14} name="time"/>
+                                <Text style={{color: '#727272'}}>From :</Text>
+                                <Text style={{color: '#727272'}}>{requestSendingTime}</Text>
+                            </View>
+                            <View style={{flexDirection: 'row', gap: 4, alignItems: "center"}}>
+                                <Ionicons color={'#FF912C'} size={14} name="time"/>
+                                <Text style={{color: '#727272'}}>To :</Text>
+                                <Text style={{color: '#727272'}}>{requestSendingTime}</Text>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </TouchableOpacity>
-        </>
+                </TouchableOpacity>
+            })
+        }
     }
 
-    console.log(reCallStatus, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
     return (
         <View style={[parentsStyling.container]}>
-            <MainHeader/>
+            <MainHeader main={true}/>
             <View style={parentsStyling.buttonContainer}>
-                <View>
-                    <Ionicons onPress={() => setState({...state, isBottomSheetOpen: true, mode: "children"})}
-                              style={parentsStyling.buttons} name="person-outline" size={26} color="#FF912C"/>
-                    <Text style={{fontSize: 10, textAlign: "center", color: "white", marginTop: 6}}>Profile</Text>
-                </View>
                 <View>
                     <Ionicons onPress={() => navigation.navigate("FavouriteParent", {
                         headerName: "Favourites"
@@ -244,10 +242,12 @@ export default function CareTakerHome({navigation}) {
             />
 
             <View style={{height: "70%", padding: 16}}>
-                <View style={parentsStyling.parentContainer}>
+                <View style={[parentsStyling.parentContainer, {
+                    marginBottom: 10
+                }]}>
                     {
                         state.bookingSegmentValue === "new"
-                            ? <ScrollView showsVerticalScrollIndicator={false}>
+                            ? <ScrollView style={{marginBottom:20}} showsVerticalScrollIndicator={false}>
                                 <View style={[BottomSheetStyling.headingContainer, {backgroundColor: "white"}]}>
                                     <View style={{
                                         flexDirection: "row",
@@ -261,12 +261,29 @@ export default function CareTakerHome({navigation}) {
                                     </View>
                                     <View style={[BottomSheetStyling.rightCircle, {backgroundColor: '#FF912C'}]}/>
                                 </View>
-                                {state.loading
-                                    ? <ActivityIndicator color={"#2CA6FF"} size={50}/>
-                                    : renderNewBookings()}
+                                {
+                                    state.loading
+                                        ? <ActivityIndicator color={"#2CA6FF"} size={50}/>
+                                        : renderNewBookings()
+                                }
                             </ScrollView>
                             : <ScrollView>
-                                {renderUpcomingBookings()}
+                                <View style={[BottomSheetStyling.headingContainer, {backgroundColor: "white"}]}>
+                                    <View style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 10,
+                                        width: "80%",
+                                        overflow: "hidden"
+                                    }}>
+                                        <Text style={BottomSheetStyling.headingTitle}>Upcoming Bookings</Text>
+                                        <View style={BottomSheetStyling.hr}></View>
+                                    </View>
+                                    <View style={[BottomSheetStyling.rightCircle, {backgroundColor: '#FF912C'}]}/>
+                                </View>
+                                {state.loading
+                                    ? <ActivityIndicator color={"#2CA6FF"} size={50}/>
+                                    : renderUpcomingBookings()}
                             </ScrollView>
                     }
                 </View>

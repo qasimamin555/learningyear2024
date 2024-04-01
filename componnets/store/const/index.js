@@ -5,3 +5,9 @@ export const SET_SERVICES = "SET_SERVICES";
 export const SET_CHILDRENS = "SET_CHILDRENS";
 export const SET_CARE_TAKERS = "SET_CARE_TAKERS";
 export const SET_USER_INFO = "SET_USER_INFO";
+
+export const SET_UPCOMING_REQUEST_DATA = 'SET_UPCOMING_REQUEST_DATA'
+
+export const SET_RELOAD  = 'SET_RELOAD';
+
+export const SET_ALL_REQUEST = 'SET_ALL_REQUEST';

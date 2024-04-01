@@ -11,6 +11,20 @@ export const getToken = async () => {
                     let data = JSON.parse(response);
                     return data.token
                 } catch (e) {
+                    ToastAndroid.show(er.message, 2000);
+                }
+            }
+        })
+}
+
+export const getUserData = async () => {
+    return await AsyncStorage.getItem('userInfo')
+        .then(response => {
+            if (response) {
+                try {
+                    return JSON.parse(response);
+                } catch (e) {
+                    ToastAndroid.show(er.message, 2000);
 
                 }
             }
@@ -25,6 +39,7 @@ export const getUserId = async () => {
                     let data = JSON.parse(response);
                     return data._id
                 } catch (e) {
+                    ToastAndroid.show(er.message, 2000);
 
                 }
             }
@@ -134,11 +149,12 @@ export const getServices = (token, id) => {
         })
 }
 
-export const getBookingsRequest = (token) => {
+export const getBookingsRequest = (token, filter) => {
     return request.get('api/requestBooking', {
         headers: {
             Authorization: token,
         },
+        params: filter
     })
         .then(response => {
             if (response?.data?.success) {
@@ -170,7 +186,6 @@ export const acceptBookingStatus = (token, updateId) => {
             }
         })
         .catch(error => {
-            console.log(error.response.data, "3################")
             if (error?.response?.data?.data?.error?.message) {
                 ToastAndroid.show(error.response.data.data.error.message, 2000);
             } else {
@@ -206,6 +221,52 @@ export const addChildren = (token, data) => {
     return request.post('api/children', data, {
         headers: {
             Authorization: token
+        }
+    })
+        .then(response => {
+            if (response?.data?.success) {
+                return response.data;
+            } else {
+                ToastAndroid.show("Something went wrong", 2000);
+            }
+        })
+        .catch(error => {
+            if (error?.response?.data?.data?.error?.message) {
+                ToastAndroid.show(error.response.data.data.error.message, 2000);
+            } else {
+                ToastAndroid.show(error.message, 2000);
+            }
+        })
+}
+
+export const updateChildren = (token, data) => {
+    return request.put('api/children', data, {
+        headers: {
+            Authorization: token
+        }
+    })
+        .then(response => {
+            if (response?.data?.success) {
+                return response.data;
+            } else {
+                ToastAndroid.show("Something went wrong", 2000);
+            }
+        })
+        .catch(error => {
+            if (error?.response?.data?.data?.error?.message) {
+                ToastAndroid.show(error.response.data.data.error.message, 2000);
+            } else {
+                ToastAndroid.show(error.message, 2000);
+            }
+        })
+}
+export const updateRequestElements = (token, data, id) => {
+    return request.put('api/updateRequest', data, {
+        headers: {
+            Authorization: token,
+        },
+        params: {
+            _id: id
         }
     })
         .then(response => {

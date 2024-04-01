@@ -29,6 +29,8 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {GlobalContext} from "./store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {SET_USER_INFO} from "./store/const";
+import * as Location from "expo-location";
+import {ToastAndroid} from "react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,7 +48,29 @@ class Router extends Component {
     static contextType = GlobalContext;
 
     componentDidMount() {
+        this.getLocation();
         this.authenticateUser();
+    }
+
+
+    getLocation = async () => {
+        AsyncStorage.getItem('location')
+            .then(async response => {
+                if (!response) {
+                    let {status} = await Location.requestForegroundPermissionsAsync();
+                    if (status !== 'granted') {
+                        ToastAndroid.show("Permission declined", 2000);
+                        return;
+                    }
+
+                    let location = await Location.getCurrentPositionAsync({});
+                    let obj = {
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude
+                    }
+                    await AsyncStorage.setItem("location", JSON.stringify(obj));
+                }
+            })
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -89,17 +113,25 @@ class Router extends Component {
                                 <Stack.Screen name="start" options={{headerShown: false}} component={ScreenOne}/>
                                 <Stack.Screen name="login" options={{headerShown: false}} component={Login}/>
                                 <Stack.Screen name="pincode" options={{headerShown: false}} component={Pincode}/>
-                                <Stack.Screen name="paymentMethod" options={{headerShown: false}}
-                                              component={PaymentMethod}/>
-                                <Stack.Screen name="changePassword" options={{headerShown: false}}
-                                              component={ChangePassword}/>
+                                <Stack.Screen
+                                    name="paymentMethod"
+                                    options={{headerShown: false}}
+                                    component={PaymentMethod}/>
+                                <Stack.Screen
+                                    name="changePassword"
+                                    options={{headerShown: false}}
+                                    component={ChangePassword}/>
                                 <Stack.Screen name="phoneNumber" options={{headerShown: false}} component={PhoneNumber}/>
                                 <Stack.Screen name="newPassword" options={{headerShown: false}} component={ForgotPassword}/>
                                 <Stack.Screen name="email" options={{headerShown: false}} component={Email}/>
-                                <Stack.Screen name="guardianSignup" options={{headerShown: false}}
-                                              component={GuardianSignup}/>
-                                <Stack.Screen name="caretakerSignup" options={{headerShown: false}}
-                                              component={CaretakerSignup}/>
+                                <Stack.Screen
+                                    name="guardianSignup"
+                                    options={{headerShown: false}}
+                                    component={GuardianSignup}/>
+                                <Stack.Screen
+                                    name="caretakerSignup"
+                                    options={{headerShown: false}}
+                                    component={CaretakerSignup}/>
                             </>
                         }
                     </>

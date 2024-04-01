@@ -41,7 +41,9 @@ export default function MainHeader(props) {
             <View style={{width: "33.33%"}}>
                 {props.main
                     ? <Ionicons onPress={logout} size={22} name="log-out" color={"white"}/>
-                    : <Ionicons onPress={() => props?.navigation?.goBack()} size={22} name={"arrow-back"} color={"white"}/>
+                    : <Ionicons onPress={() => {
+                        props?.navigation?.goBack()
+                    }} size={22} name={"arrow-back"} color={"white"}/>
                 }
             </View>
             <View style={{width: "33.33%"}}>

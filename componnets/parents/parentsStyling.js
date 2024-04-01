@@ -24,7 +24,7 @@ const parentStyling = StyleSheet.create({
         justifyContent: "space-between"
     },
     parentContainer: {
-        height: "90%"
+        // height: "90%"
     }
 });
 

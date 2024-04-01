@@ -4,5 +4,9 @@ export const initialState = {
     childrenData: [],
     services: {},
     bookingRequestsData: [],
-    reCallStatus: false
+    reCallStatus: false,
+    upcomingRequestData: [],
+    reload: false,
+    allRequests:[]
+
 };

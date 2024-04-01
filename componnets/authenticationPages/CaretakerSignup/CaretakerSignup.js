@@ -1,5 +1,5 @@
-import React, {useContext, useState} from "react";
-import {Text, View, Button, Image, ScrollView, TouchableOpacity, ToastAndroid} from 'react-native';
+import React, {useContext, useEffect, useState} from "react";
+import {Text, View, Button, Image, ScrollView, TouchableOpacity, ToastAndroid, Alert} from 'react-native';
 import styles from "../../rootStyling";
 import splashStyling from "../../splashScreens/splashScreensStyling";
 import {TextInput, RadioButton, Checkbox, HelperText} from 'react-native-paper';
@@ -14,8 +14,87 @@ import {loginUser, registration, uploadImage} from "../../actions";
 import {SET_USER_INFO} from "../../store/const";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {GlobalContext} from "../../store";
-import * as ImagePicker from "expo-image-picker";
 import FormData from "form-data"
+import * as Location from "expo-location";
+
+let musicalData = [
+    {
+        label: "Cello"
+    },
+    {
+        label: "Guitar"
+    },
+    {
+        label: "Flute"
+    },
+    {
+        label: "Piano"
+    },
+    {
+        label: "Vialin"
+    }
+]
+
+let sportsData = [
+    {
+        label: "Baseball"
+    },
+    {
+        label: "Basketball"
+    },
+    {
+        label: "Football"
+    },
+    {
+        label: "Soccer"
+    },
+    {
+        label: "Tennis"
+    },
+    {
+        label: "Volleyball"
+    }
+]
+
+let languageData = [
+    {
+        label: "Arabic"
+    },
+    {
+        label: "Chinese"
+    },
+    {
+        label: "French"
+    },
+    {
+        label: "German"
+    },
+    {
+        label: "Hebrew"
+    },
+    {
+        label: "Hindi"
+    },
+    {
+        label: "Italian"
+    },
+    {
+        label: "Japanese"
+    },
+    {
+        label: "Korean"
+    },
+    {
+        label: "Russian"
+    },
+    {
+        label: "Spanish"
+    },
+    {
+        label: "Tagalog"
+    }
+]
+
 
 export default function CaretakerSignup({route, navigation}) {
 
@@ -51,83 +130,62 @@ export default function CaretakerSignup({route, navigation}) {
         OnChange("payload", {dateOfBirth: date});
     };
     const [selectedDate, setSelectedDate] = useState(null);
-    let musicalData = [
-        {
-            label: "Cello"
-        },
-        {
-            label: "Guitar"
-        },
-        {
-            label: "Flute"
-        },
-        {
-            label: "Piano"
-        },
-        {
-            label: "Vialin"
-        }
-    ]
 
-    let sportsData = [
-        {
-            label: "Baseball"
-        },
-        {
-            label: "Basketball"
-        },
-        {
-            label: "Football"
-        },
-        {
-            label: "Soccer"
-        },
-        {
-            label: "Tennis"
-        },
-        {
-            label: "Volleyball"
-        }
-    ]
+    useEffect(() => {
+        AsyncStorage.getItem('location')
+            .then(async data => {
+                if (data) {
+                    let parseData = JSON.parse(data);
+                    let location = await Location.reverseGeocodeAsync(parseData);
+                    let address = formatAddress(location[0]);
+                    setForm({...form, address: address});
+                }
+            })
+    }, []);
 
-    let languageData = [
-        {
-            label: "Arabic"
-        },
-        {
-            label: "Chinese"
-        },
-        {
-            label: "French"
-        },
-        {
-            label: "German"
-        },
-        {
-            label: "Hebrew"
-        },
-        {
-            label: "Hindi"
-        },
-        {
-            label: "Italian"
-        },
-        {
-            label: "Japanese"
-        },
-        {
-            label: "Korean"
-        },
-        {
-            label: "Russian"
-        },
-        {
-            label: "Spanish"
-        },
-        {
-            label: "Tagalog"
+
+    function formatAddress(address) {
+        let formattedAddress = "";
+
+        if (address.name) {
+            formattedAddress += address.name + " ";
         }
-    ]
+
+        if (address.streetNumber) {
+            formattedAddress += address.streetNumber + " ";
+        }
+
+        if (address.street) {
+            formattedAddress += address.street + ", ";
+        }
+
+        if (address.district) {
+            formattedAddress += address.district + ", ";
+        }
+
+        if (address.city) {
+            formattedAddress += address.city + ", ";
+        }
+
+        if (address.subregion) {
+            formattedAddress += address.subregion + ", ";
+        }
+
+        if (address.region) {
+            formattedAddress += address.region + ", ";
+        }
+
+        if (address.postalCode) {
+            formattedAddress += address.postalCode + ", ";
+        }
+
+        if (address.country) {
+            formattedAddress += address.country;
+        }
+
+        return formattedAddress.trim();
+    }
+
 
     let pickupService = [
         {text: "Eligibility for pick ups / drop offs:", radio: false},
@@ -155,50 +213,56 @@ export default function CaretakerSignup({route, navigation}) {
     }
 
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result['cancelled']) {
-            const data = result.assets[0];
-            uploadImage(data)
-                .then(response => {
-                })
-                .catch(err => {
-                    console.log(err, "!!!!!!!!!!!!!!!!!!!!!!111");
-                })
-        }
+        // let result = await ImagePicker.launchImageLibraryAsync({
+        //     mediaTypes: ImagePicker.MediaTypeOptions.All,
+        //     aspect: [4, 3],
+        //     quality: 1,
+        // });
+        //
+        // if (!result['cancelled']) {
+        //     const data = result.assets[0];
+        //     uploadImage(data)
+        //         .then(response => {
+        //         })
+        //         .catch(err => {
+        //             console.log(err, "!!!!!!!!!!!!!!!!!!!!!!111");
+        //         })
+        // }
     };
 
     const signUp = () => {
-        let {name, email, password, address, registrationType, childName, childSchool} = form;
-        if (!!name?.trim() && !!email?.trim() && !!password?.trim() && !!address?.trim()) {
-            setState({...state, isInvalid: false})
-            registration(form)
-                .then(response => {
-                    if (response?.success) {
-                        ToastAndroid.show("Account created successfully", 2000);
-                        loginUser({email, password})
-                            .then(async response => {
-                                if (response?.success) {
-                                    dispatch({type: SET_USER_INFO, payload: response.data.result});
-                                    await AsyncStorage.setItem("userInfo", JSON.stringify(response.data.result));
-                                    setForm({
-                                        name: "",
-                                        email: "",
-                                        password: "",
-                                        address: "",
-                                        registrationType: "parent",
+        AsyncStorage.getItem('location')
+            .then(locate => {
+                if (!locate) {
+                    return ToastAndroid.show("Location is required", 2000);
+                }
+                let {name, email, password, address, registrationType, childName, childSchool} = form;
+                if (!!name?.trim() && !!email?.trim() && !!password?.trim() && !!address?.trim()) {
+                    setState({...state, isInvalid: false});
+                    registration({...form, location: JSON.parse(locate)})
+                        .then(response => {
+                            if (response?.success) {
+                                ToastAndroid.show("Account created successfully", 2000);
+                                loginUser({email, password})
+                                    .then(async response => {
+                                        if (response?.success) {
+                                            dispatch({type: SET_USER_INFO, payload: response.data.result});
+                                            await AsyncStorage.setItem("userInfo", JSON.stringify(response.data.result));
+                                            setForm({
+                                                name: "",
+                                                email: "",
+                                                password: "",
+                                                address: "",
+                                                registrationType: "parent",
+                                            })
+                                        }
                                     })
-                                }
-                            })
-                    }
-                });
-        } else {
-            setState({...state, isInvalid: true});
-        }
+                            }
+                        });
+                } else {
+                    setState({...state, isInvalid: true});
+                }
+            })
     }
 
     let drawerContent = state.drawerName === "Music" ? musicalData : state.drawerName === "Language" ? languageData : sportsData

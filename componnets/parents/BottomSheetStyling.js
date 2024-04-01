@@ -6,7 +6,7 @@ const BottomSheetStyling = StyleSheet.create({
         borderTopLeftRadius:20,
         borderTopRightRadius:20,
         padding:20,
-        height:"80%"
+        height:"90%"
     },
     headingContainer:{
         padding:10,
@@ -14,7 +14,7 @@ const BottomSheetStyling = StyleSheet.create({
         borderRadius:8,
         flexDirection:"row",
         alignItems:"center",
-        justifyContent:"space-between"
+        justifyContent:"space-between",
     },
     headingTitle:{
         color:"#263238"

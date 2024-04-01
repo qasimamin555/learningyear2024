@@ -73,7 +73,7 @@ export default function ConfirmationBooking({route, navigation}) {
                         <Text style={{color: "grey"}}>
                             Age
                         </Text>
-                        <Text style={{color: "#FF912C"}}>{state.childInfo?.[0]?.dateOfBirth}</Text>
+                        <Text style={{color: "#FF912C"}}>{state.childInfo?.[0]?.age}</Text>
                     </View>
 
                     <View style={{flexDirection: "row", justifyContent: "space-between"}}>
@@ -91,7 +91,7 @@ export default function ConfirmationBooking({route, navigation}) {
                     </View>
 
                     <View style={{marginTop: 10}}/>
-                    <Text style={{fontWeight: "bold", marginTop: 10}}>Reques Info</Text>
+                    <Text style={{fontWeight: "bold", marginTop: 10}}>Request Info</Text>
 
                     <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                         <Text style={{color: "grey"}}>
@@ -116,6 +116,7 @@ export default function ConfirmationBooking({route, navigation}) {
                         return <Text key={index} style={{marginTop: 2, color: "grey"}}>{name}</Text>
                     })}
                 </View>
+
                 <View style={{flexDirection: "row", width: "100%", justifyContent: "space-between", marginTop: 20}}>
                     <View style={{width: "45%"}}>
                         <Button onPress={acceptBooking} color={"#00B428"} title={"Accept"}/>

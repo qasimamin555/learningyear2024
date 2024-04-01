@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Button, Image, ScrollView, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import parentsStyling from "../../parentsStyling";
 import MainHeader from "../../header/header";
@@ -9,12 +9,98 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import {BottomSheet} from "react-native-btr";
 import CalendarPicker from "react-native-calendar-picker";
 import BottomSheetStyling from "../../BottomSheetStyling";
-import {addChildren} from "../../../actions";
+import {addChildren, updateChildren} from "../../../actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChildBottomSheet from "../../ChildBottomSheet";
 import babyOne from "../../../../assets/baby/baby1.jpeg";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import {SET_CHILDRENS} from "../../../store/const";
+import {GlobalContext} from "../../../store";
+
+let musicalData = [
+    {
+        label: "Cello"
+    },
+    {
+        label: "Guitar"
+    },
+    {
+        label: "Flute"
+    },
+    {
+        label: "Piano"
+    },
+    {
+        label: "Vialin"
+    }
+]
+
+let sportsData = [
+    {
+        label: "Baseball"
+    },
+    {
+        label: "Basketball"
+    },
+    {
+        label: "Football"
+    },
+    {
+        label: "Soccer"
+    },
+    {
+        label: "Tennis"
+    },
+    {
+        label: "Volleyball"
+    }
+]
+
+let languageData = [
+    {
+        label: "Arabic"
+    },
+    {
+        label: "Chinese"
+    },
+    {
+        label: "French"
+    },
+    {
+        label: "German"
+    },
+    {
+        label: "Hebrew"
+    },
+    {
+        label: "Hindi"
+    },
+    {
+        label: "Italian"
+    },
+    {
+        label: "Japanese"
+    },
+    {
+        label: "Korean"
+    },
+    {
+        label: "Russian"
+    },
+    {
+        label: "Spanish"
+    },
+    {
+        label: "Tagalog"
+    }
+]
 
 export default function AddChildForm({route, navigation}) {
+    const [globalState, dispatch] = useContext(GlobalContext);
+    const {headerName, isAdd, update, data} = route.params;
+
     const [state, setState] = useState({
         isPickUp: false,
         childSeat: "",
@@ -36,13 +122,30 @@ export default function AddChildForm({route, navigation}) {
         school: "",
         gender: "male",
         note: "",
-        age:""
+        age: ""
     })
 
     const [selectedDate, setSelectedDate] = useState(null);
 
+    useEffect(() => {
+        if (update) {
+            console.log(JSON.stringify(data, null, 2))
+            let {name, age, gender, school, note, _id} = data;
+            setForm({
+                name: name,
+                school: school,
+                gender: gender,
+                note: note,
+                age: age,
+                id: _id
+            })
+        }
+    }, [update]);
+
     const hasErrors = (name) => {
-        return (!form[name]?.trim() && state.isInvalid);
+        if (name === "age") {
+            return (!form[name] && state.isInvalid);
+        } else return (!form[name]?.trim() && state.isInvalid);
     }
 
     const getToken = async () => {
@@ -62,8 +165,27 @@ export default function AddChildForm({route, navigation}) {
     const AddChild = () => {
         if (!form.name.trim() || !form.gender.trim() || !form.age.trim()) {
             setState({...state, isInvalid: true});
+        } else if (update) {
+            let data = {...form};
+            getToken()
+                .then(token => {
+                    updateChildren(token, data)
+                        .then(response => {
+                            if (response?.success) {
+                                setForm({
+                                    name: "",
+                                    school: "",
+                                    gender: "male",
+                                    note: ""
+                                });
+                                ToastAndroid.show("Data updated successfully", 2000);
+                                dispatch({type: SET_CHILDRENS, payload: []})
+                                navigation.goBack();
+                            }
+                        })
+                })
         } else {
-            let data = {...form, dateOfBirth: selectedDate};
+            let data = {...form};
             getToken()
                 .then(token => {
                     addChildren(token, data)
@@ -76,6 +198,7 @@ export default function AddChildForm({route, navigation}) {
                                     note: ""
                                 });
                                 ToastAndroid.show("Date added successfully", 2000);
+                                dispatch({type: SET_CHILDRENS, payload: []})
                                 navigation.goBack();
                             }
                         })
@@ -84,88 +207,10 @@ export default function AddChildForm({route, navigation}) {
     }
 
     const OnChange = (name, value, extraParam) => {
-        if (name === "dateOfBirth") {
-            setState({...state, [extraParam]: value});
+        if (name === "age") {
+            setForm({...form, [name]: value.toISOString()});
         } else setForm({...form, [name]: value});
     };
-
-    let musicalData = [
-        {
-            label: "Cello"
-        },
-        {
-            label: "Guitar"
-        },
-        {
-            label: "Flute"
-        },
-        {
-            label: "Piano"
-        },
-        {
-            label: "Vialin"
-        }
-    ]
-
-    let sportsData = [
-        {
-            label: "Baseball"
-        },
-        {
-            label: "Basketball"
-        },
-        {
-            label: "Football"
-        },
-        {
-            label: "Soccer"
-        },
-        {
-            label: "Tennis"
-        },
-        {
-            label: "Volleyball"
-        }
-    ]
-
-    let languageData = [
-        {
-            label: "Arabic"
-        },
-        {
-            label: "Chinese"
-        },
-        {
-            label: "French"
-        },
-        {
-            label: "German"
-        },
-        {
-            label: "Hebrew"
-        },
-        {
-            label: "Hindi"
-        },
-        {
-            label: "Italian"
-        },
-        {
-            label: "Japanese"
-        },
-        {
-            label: "Korean"
-        },
-        {
-            label: "Russian"
-        },
-        {
-            label: "Spanish"
-        },
-        {
-            label: "Tagalog"
-        }
-    ]
 
     const hasDateError = () => {
         return !selectedDate;
@@ -175,16 +220,33 @@ export default function AddChildForm({route, navigation}) {
         setSelectedDate(date);
     };
 
-    const customDatesStyles = [];
+    const timer = (event, date) => {
+        if (event.type === "set") {
+            setState({...state, mode: "", timerValue: ""});
+            OnChange("age", date);
+        }
+    }
 
+    const handleDate = () => {
+        setState({...state, mode: "timer"});
+    }
 
-    const {headerName, isAdd} = route.params
-
-    console.log(selectedDate, "$$$$$$$$$$")
     let drawerContent = state.drawerName === "Music" ? musicalData : state.drawerName === "Language" ? languageData : sportsData
     return (
         <View style={[parentsStyling.container]}>
-            <MainHeader headerName={headerName}/>
+            <MainHeader navigation={navigation} headerName={headerName}/>
+
+            {
+                state.mode === "timer"
+                && <RNDateTimePicker
+                    onChange={timer}
+                    mode={"timer"}
+                    value={form.age ? new Date(form.age) : new Date()}
+                    display={"clock"}
+                    maximumDate={new Date()}
+                />
+            }
+
             <View style={[parentsStyling.buttonContainer, {flexDirection: "column", paddingTop: 0}]}>
                 <Image style={{height: 100, width: 100}} source={profileImage}/>
                 <Text style={{marginTop: -30, fontSize: 12, color: "white"}}>Upload</Text>
@@ -214,17 +276,24 @@ export default function AddChildForm({route, navigation}) {
                             onChangeText={(e) => OnChange("school", e)}
                         />
 
-                        <Text style={authenticationStyling.optionsHeading}>Enter Age :</Text>
+                        <TouchableOpacity
+                            onPress={handleDate}
+                            style={{
+                                marginTop: 38,
+                                borderBottomWidth: 1,
+                                borderBottomColor: 'lightgrey',
+                                display: "inline",
+                                flexDirection: "row",
+                                justifyContent: "space-between"
+                            }}
+                        >
+                            <Text
+                                style={{color: "#000", marginBottom: 19}}
+                                onChangeText={(e) => OnChange("age", e)}
+                            >{form.age ? new Date(form.age).toLocaleString() : 'Select Date of Birth'}</Text>
+                            <Ionicons color={"#000"} size={22} name={"chevron-down"}/>
+                        </TouchableOpacity>
 
-                        <TextInput
-                            // label="Age"
-                            style={{backgroundColor: "white", width: "100%", marginTop:19}}
-                            activeUnderlineColor={"#FFB906"}
-                            value={form.age}
-                            onChangeText={(e) => OnChange("age", e)}
-                            placeholder={"9 months or 7 years"}
-                            placeholderTextColor={"gray"}
-                        />
 
                         <HelperText type="error" visible={hasErrors("age")}>
                             Date of Birth is required!
@@ -268,7 +337,6 @@ export default function AddChildForm({route, navigation}) {
                                     nextTitle="Next"
                                     selectedDayColor="#3498db" // Selected day background color
                                     selectedDayTextColor="#fff" // Selected day text color
-                                    customDatesStyles={customDatesStyles}
                                 />
                             </View>
                         </BottomSheet>
@@ -315,6 +383,7 @@ export default function AddChildForm({route, navigation}) {
                                     onPress={() => {
                                         OnChange("gender", "male")
                                     }}
+                                    // value={}
                                 />
                                 <Text style={[authenticationStyling.optionsHeading, {marginTop: -2}]}>Male</Text>
                             </View>
@@ -387,7 +456,7 @@ export default function AddChildForm({route, navigation}) {
                         </ScrollView>
                     </View>
                 </BottomSheet>
-                <Button onPress={() => isAdd && AddChild()} color={"#FFB906"} title={isAdd ? "Add" : "Update"}></Button>
+                <Button onPress={() => AddChild()} color={"#FFB906"} title={isAdd ? "Add" : "Update"}></Button>
             </View>
         </View>
     );
