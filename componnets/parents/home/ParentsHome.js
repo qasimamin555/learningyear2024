@@ -35,6 +35,7 @@ import * as Location from 'expo-location';
 
 
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import {Calendar} from "react-native-calendars";
 
 export default function ParentsHome({navigation}) {
     const [state, setState] = useState({
@@ -124,9 +125,6 @@ export default function ParentsHome({navigation}) {
                                 setState({...state, loading: false})
                             })
                     })
-                    .finally(() => {
-                        setState({...state, loading: false})
-                    })
             }
         }
 
@@ -136,7 +134,6 @@ export default function ParentsHome({navigation}) {
 
     }, [globalState.careTakers, state.isBottomSheetOpen, childrenData, services, state.isTimer, reload]);
 
-    console.log(reload, '***********************************************************')
     // Assume backendData is an array of dates from the backend that need a different background color
     const backendData = ['2024-01-10', '2024-01-15', '2024-01-20'];
 
@@ -389,35 +386,22 @@ export default function ParentsHome({navigation}) {
                             justifyContent: "space-between",
                             height: '100%'
                         }]}>
-                            <CalendarPicker
-                                minDate={new Date()}
-                                onDateChange={handleDateChange}
-                                selectedStartDate={selectedDate}
-                                selectedEndDate={selectedDate}
-                                weekdays={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
-                                months={[
-                                    'January',
-                                    'February',
-                                    'March',
-                                    'April',
-                                    'May',
-                                    'June',
-                                    'July',
-                                    'August',
-                                    'September',
-                                    'October',
-                                    'November',
-                                    'December',
-                                ]}
-                                textStyle={{
-                                    color: '#000', // Default text color
+                            <Calendar
+                                onDayPress={day => {
+                                    console.log('selected day', day);
                                 }}
-                                previousTitle="Previous"
-                                nextTitle="Next"
-                                selectedDayColor="#3498db" // Selected day background color
-                                selectedDayTextColor="#fff" // Selected day text color
-                                customDatesStyles={customDatesStyles}
+                                markingType={'period'}
+                                markedDates={{
+                                    '2024-04-15': {marked: true, dotColor: 'blue'},
+                                    '2024-04-16': {marked: true, dotColor: 'blue'},
+                                    '2024-04-21': {startingDay: true, color: 'blue', textColor: 'white'},
+                                    '2024-04-22': {color: 'blue', textColor: 'white'},
+                                    '2024-04-23': {color: 'blue', textColor: 'white', marked: true, dotColor: 'white'},
+                                    '2024-04-24': {color: 'blue', textColor: 'white'},
+                                    '2024-04-25': {endingDay: true, color: 'blue', textColor: 'white'}
+                                }}
                             />
+
                             <Button
                                 onPress={() => {
                                     setState({...state, mode: state.isTimer ? "" : "children"})
@@ -588,7 +572,6 @@ export default function ParentsHome({navigation}) {
                                 />
 
                             </View>
-
                 }
             </BottomSheet>
 
@@ -716,7 +699,8 @@ export default function ParentsHome({navigation}) {
         getAllRequests()
     }, []);
 
-    console.log(state.segmentValue, "##############################################################")
+
+    console.log("PARENT FILE IS RENDERING ............................... ");
     return (
         <>
             <View style={[parentsStyling.container]}>
@@ -835,3 +819,34 @@ export default function ParentsHome({navigation}) {
         </>
     );
 }
+
+
+// <CalendarPicker
+//                                 showDayStragglers={true}
+//                                 onDateChange={handleDateChange}
+//                                 selectedStartDate={selectedDate}
+//                                 selectedEndDate={selectedDate}
+//                                 weekdays={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+//                                 months={[
+//                                     'January',
+//                                     'February',
+//                                     'March',
+//                                     'April',
+//                                     'May',
+//                                     'June',
+//                                     'July',
+//                                     'August',
+//                                     'September',
+//                                     'October',
+//                                     'November',
+//                                     'December',
+//                                 ]}
+//                                 textStyle={{
+//                                     color: '#000', // Default text color
+//                                 }}
+//                                 previousTitle="Previous"
+//                                 nextTitle="Next"
+//                                 selectedDayColor="#3498db" // Selected day background color
+//                                 selectedDayTextColor="#fff" // Selected day text color
+//                                 customDatesStyles={customDatesStyles}
+//                             />

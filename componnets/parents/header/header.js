@@ -61,7 +61,9 @@ export default function MainHeader(props) {
                         borderRadius: 17,
                         borderWidth: 1,
                         borderColor: "black",
-                    }} source={man}/>
+                    }}
+                           // source={man}
+                    />
                 </TouchableOpacity>
 
             </View>

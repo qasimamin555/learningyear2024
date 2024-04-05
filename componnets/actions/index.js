@@ -82,11 +82,12 @@ export const loginUser = (data) => {
         })
 }
 
-export const getCareTakers = (token) => {
+export const getCareTakers = (token, filter) => {
     return request.get('api/caretakers', {
         headers: {
             Authorization: token
-        }
+        },
+        params: filter
     })
         .then(response => {
             if (response?.data?.success) {

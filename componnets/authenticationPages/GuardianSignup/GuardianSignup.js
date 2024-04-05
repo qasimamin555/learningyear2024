@@ -42,15 +42,18 @@ export default function GuardianSignup({route, navigation}) {
     }
 
     useEffect(() => {
-        AsyncStorage.getItem('location')
-            .then(async data => {
-                if (data) {
-                    let parseData = JSON.parse(data);
-                    let location = await Location.reverseGeocodeAsync(parseData);
-                    let address = formatAddress(location[0]);
-                    setForm({...form, address: address});
-                }
-            })
+        (async () => {
+            await AsyncStorage.getItem('location')
+                .then(async data => {
+                    console.log(data, 'dddddddddddddddddddddddd');
+                    if (data) {
+                        let parseData = JSON.parse(data);
+                        let location = await Location.reverseGeocodeAsync(parseData);
+                        let address = formatAddress(location[0]);
+                        setForm({...form, address: address});
+                    }
+                })
+        })()
     }, []);
 
 

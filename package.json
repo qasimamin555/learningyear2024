@@ -27,6 +27,7 @@
     "react-native": "0.72.10",
     "react-native-btr": "^2.2.0",
     "react-native-calendar-picker": "^7.1.4",
+    "react-native-calendars": "^1.1304.1",
     "react-native-country-codes-picker": "^2.3.4",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-paper": "^5.11.4",

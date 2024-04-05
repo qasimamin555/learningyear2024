@@ -23,8 +23,8 @@ function getToken() {
 
 const request =  axios.create({
     // baseURL: process.env.API_URL, // Use your environment variable here
-    baseURL: 'http://192.168.0.110:5000', // Use your environment variable here
-    // baseURL: 'https://nodejs-boilerplate-pi.vercel.app', // Use your environment variable here
+    // baseURL: 'http://192.168.0.110:5000', // Use your environment variable here
+    baseURL: 'https://nodejs-boilerplate-pi.vercel.app', // Use your environment variable here
     timeout: 50000, // Set a timeout if needed
     headers: {
         'Content-Type': 'application/json',
@@ -34,6 +34,7 @@ const request =  axios.create({
 request.interceptors.response.use(
     response => response,
     async error => {
+        console.log(error.response.status, "ERRO RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
         if (error?.response?.status && error.response.status === 401) {
             // Perform logout actions, such as clearing local storage
             await AsyncStorage.removeItem('userInfo');

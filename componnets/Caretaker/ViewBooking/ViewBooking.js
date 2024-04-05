@@ -13,93 +13,80 @@ import woman from "../../../assets/man/woman.jpeg"
 
 export default function ViewBooking({route, navigation}) {
     const [state, setState] = useState({
-        isBottomSheetOpen:false
+        isBottomSheetOpen: false
     })
-    const {headerName} = route.params
+    const {headerName, data} = route.params;
+
+    console.log(data, "***********************************")
     return (
         <View style={[parentsStyling.container]}>
-            <MainHeader  isCaretaker={true} headerName={headerName}/>
-            <View style={{padding:20, backgroundColor:"#2CA6FF", paddingTop:0}}>
-                <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
-                    <View style={{flexDirection:"row", gap:10}}>
-                        <Image source={man} style={{
-                            height:54,
-                            width:54,
-                            borderRadius:27,
-                            borderWidth:1,
-                            borderColor:"black"
+            <MainHeader isCaretaker={true} headerName={headerName}/>
+            <View style={{padding: 20, backgroundColor: "#2CA6FF", paddingTop: 0}}>
+                <View style={{flexDirection: "row", justifyContent: "space-between", width: "100%"}}>
+                    <View style={{flexDirection: "row", gap: 10}}>
+                        <Image
+                            // source={man}
+                            style={{
+                            height: 54,
+                            width: 54,
+                            borderRadius: 27,
+                            borderWidth: 1,
+                            borderColor: "black"
                         }}/>
                         <View>
-                            <Text style={{color:"white", marginTop:2, fontSize:16}}>Harry Kate</Text>
-                            <Text style={{color:"white", fontSize:10}}>Member since 2022</Text>
-                            <View style={{flexDirection:"row", alignItems:"center", gap:2, marginTop:6}}>
-                                <Ionicons name="star" color={"#FFDB1E"}/>
-                                <Text style={{fontSize:12, color:"white"}}>5.0</Text>
+                            <Text style={{color: "white", marginTop: 2, fontSize: 16}}>{data?.parentData?.name}<
+                            /Text>
+                            <View style={{flexDirection: "row", alignItems: "center", gap: 2}}>
+                                <Text style={{color: "white", marginTop: 2, fontSize: 16}}>{data?._id}</Text>
                             </View>
                         </View>
                     </View>
-                    <Text onPress={()=>setState({...state, isBottomSheetOpen:true})} style={{marginTop:10, fontSize:10, fontWeight:"bold", color:"white"}}>View</Text>
                 </View>
             </View>
-            <View style={{width:"100%", padding:20, paddingTop:10, height:"58%" }}>
-                <View style={{flexDirection:'row', gap:4, alignItems:"center", marginTop:10}}>
+            <View style={{width: "100%", padding: 20, paddingTop: 10, height: "58%"}}>
+                <View style={{flexDirection: 'row', gap: 4, alignItems: "center", marginTop: 10}}>
                     <Ionicons color={'#00B428'} size={14} name="time"/>
-                    <Text style={{color:'#727272'}}>From :</Text>
-                    <Text style={{color:'#727272'}}>24 Dec 2023, 05:00 PM</Text>
+                    <Text style={{color: '#727272'}}>From :</Text>
+                    <Text style={{color: '#727272'}}>{data?.requestFrom}</Text>
                 </View>
-                <View style={{flexDirection:'row', gap:4, alignItems:"center", marginTop:4}}>
+                <View style={{flexDirection: 'row', gap: 4, alignItems: "center", marginTop: 4}}>
                     <Ionicons color={'#00B428'} size={14} name="time"/>
-                    <Text style={{color:'#727272'}}>To     :</Text>
-                    <Text style={{color:'#727272'}}>24 Dec 2023, 05:00 PM</Text>
+                    <Text style={{color: '#727272'}}>To :</Text>
+                    <Text style={{color: '#727272'}}>{data?.requestTo}</Text>
                 </View>
 
-                <View style={{width:"100%", padding:16, backgroundColor:"#EFEEEE", marginTop:20}}>
-                    <Text style={{fontSize:15, fontWeight:"bold"}}>Child Info</Text>
-
-                    <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%", marginTop:10}}>
-                        <View style={{flexDirection:"row", gap:10}}>
-                            <Image source={man} style={{
-                                height:44,
-                                width:44,
-                                borderRadius:22,
-                                borderWidth:1,
-                                borderColor:"black"
-                            }}/>
-                            <View>
-                                <Text style={{marginTop:2, fontSize:16}}>Kerry</Text>
-                                <Text style={{color:"#FFB906", fontSize:10}}>1 Years old</Text>
-                            </View>
-                        </View>
-                        <Text onPress={()=>navigation.navigate('ChildInfoPage', {
-                            headerName:"Information"
-                        })} style={{marginTop:10, fontSize:10, fontWeight:"bold"}}>View</Text>
-                    </View>
-                    <Text style={{fontWeight:"bold", marginTop:4}}>School</Text>
-                    <Text style={{color:"grey"}}>London School, London</Text>
-
-                    <View style={{marginTop:14}}/>
-                    <Button title={"Location"}/>
-
-                    <Text style={{fontSize:15, fontWeight:"bold", marginTop:10}}>Services Required</Text>
-                    <Text style={{marginTop: 2, color: "grey"}}>Football</Text>
-                    <Text style={{marginTop: 2, color: "grey"}}>Baseball</Text>
+                <View><Text></Text></View>
+                <View style={{flexDirection: 'row', gap: 4, alignItems: "center", marginTop: 4}}>
+                    <Ionicons color={'#00B428'} size={14} name="time"/>
+                    <Text style={{color: '#727272'}}>Time From To :</Text>
+                    <Text style={{color: '#727272'}}>{data?.startTime}</Text>
                 </View>
-            </View>
-            <View style={{padding:20}}>
-                    <Button onPress={()=>navigation.navigate('chat', {
-                            headerName:"Chat"
-                        })} color={"#FFB906"} title={"Contact Parent"}/>
-                <Text onPress={()=> navigation.navigate('CareTakerHome')}
-                      style={{fontSize:15, textAlign:"center", marginTop:10, color:"grey"}}>
-                    Cancel
-                </Text>
+
+                <View style={{flexDirection: 'row', gap: 4, alignItems: "center", marginTop: 4}}>
+                    <Ionicons color={'#00B428'} size={14} name="time"/>
+                    <Text style={{color: '#727272'}}>Time To:</Text>
+                    <Text style={{color: '#727272'}}>{data?.endTime}</Text>
+                </View>
+
+                <View style={{width: "100%", padding: 16, backgroundColor: "#EFEEEE", marginTop: 20}}>
+
+                    <Text style={{fontSize: 15, fontWeight: "bold", marginTop: 10}}>Services Required</Text>
+                    {
+                        data?.services?.length
+                        && data?.services.map((v, i) => {
+                            return (
+                                <Text key={i} style={{marginTop: 2, color: "grey", fontWeight: "bold"}}>{v}</Text>
+                            )
+                        })
+                    }
+                </View>
             </View>
 
 
             <BottomSheet
                 visible={state.isBottomSheetOpen}
-                onBackButtonPress={()=>setState({...state, isBottomSheetOpen: false})}
-                onBackdropPress={()=>setState({...state, isBottomSheetOpen: false})}
+                onBackButtonPress={() => setState({...state, isBottomSheetOpen: false})}
+                onBackdropPress={() => setState({...state, isBottomSheetOpen: false})}
             >
                 <View style={BottomSheetStyling.container}>
                     <View>
@@ -108,10 +95,10 @@ export default function ViewBooking({route, navigation}) {
                                 width: "100%",
                                 flexDirection: "row",
                                 justifyContent: "space-around",
-                                gap:16,
-                                backgroundColor:"#FFF1E4",
-                                padding:16,
-                                borderRadius:10
+                                gap: 16,
+                                backgroundColor: "#FFF1E4",
+                                padding: 16,
+                                borderRadius: 10
                             }}>
                                 <View>
                                     <Image source={man} style={{
@@ -122,8 +109,13 @@ export default function ViewBooking({route, navigation}) {
                                         borderColor: "black",
                                         margin: "auto"
                                     }}/>
-                                    <Text style={{fontWeight: "bold", fontSize: 14, marginTop: 2, textAlign:"center"}}>Henry</Text>
-                                    <Text style={{color: "grey", fontSize:8, textAlign:"center"}}>(Parent)</Text>
+                                    <Text style={{
+                                        fontWeight: "bold",
+                                        fontSize: 14,
+                                        marginTop: 2,
+                                        textAlign: "center"
+                                    }}>Henry</Text>
+                                    <Text style={{color: "grey", fontSize: 8, textAlign: "center"}}>(Parent)</Text>
                                 </View>
                                 <View>
                                     <Image source={woman} style={{
@@ -134,24 +126,40 @@ export default function ViewBooking({route, navigation}) {
                                         borderColor: "black",
                                         margin: "auto"
                                     }}/>
-                                    <Text style={{fontWeight: "bold", fontSize: 14, marginTop: 2, textAlign:"center"}}>Malaika</Text>
-                                    <Text style={{color: "grey", fontSize:8, textAlign:"center"}}>(Parent)</Text>
+                                    <Text style={{
+                                        fontWeight: "bold",
+                                        fontSize: 14,
+                                        marginTop: 2,
+                                        textAlign: "center"
+                                    }}>Malaika</Text>
+                                    <Text style={{color: "grey", fontSize: 8, textAlign: "center"}}>(Parent)</Text>
                                 </View>
-                                <TouchableOpacity onPress={()=>navigation.navigate('ChildInfoPage', {
-                                    headerName:"Information"
+                                <TouchableOpacity onPress={() => navigation.navigate('ChildInfoPage', {
+                                    headerName: "Information"
                                 })}>
-                                <View style={{borderWidth:1, padding:4, borderRadius:4, borderColor:"#FF912C", backgroundColor:"#FFD3AB"}}>
-                                    <Image source={babyTwo} style={{
-                                        height: 50,
-                                        width: 50,
-                                        borderRadius: 40,
+                                    <View style={{
                                         borderWidth: 1,
-                                        borderColor: "black",
-                                        margin: "auto"
-                                    }}/>
-                                    <Text style={{fontWeight: "bold", fontSize: 14, marginTop: 2, textAlign:"center"}}>Peter</Text>
-                                    <Text style={{color: "grey", fontSize:8, textAlign:"center"}}>(Son)</Text>
-                                </View>
+                                        padding: 4,
+                                        borderRadius: 4,
+                                        borderColor: "#FF912C",
+                                        backgroundColor: "#FFD3AB"
+                                    }}>
+                                        <Image source={babyTwo} style={{
+                                            height: 50,
+                                            width: 50,
+                                            borderRadius: 40,
+                                            borderWidth: 1,
+                                            borderColor: "black",
+                                            margin: "auto"
+                                        }}/>
+                                        <Text style={{
+                                            fontWeight: "bold",
+                                            fontSize: 14,
+                                            marginTop: 2,
+                                            textAlign: "center"
+                                        }}>Peter</Text>
+                                        <Text style={{color: "grey", fontSize: 8, textAlign: "center"}}>(Son)</Text>
+                                    </View>
                                 </TouchableOpacity>
                                 <View>
                                     <Image source={babyOne} style={{
@@ -162,10 +170,15 @@ export default function ViewBooking({route, navigation}) {
                                         borderColor: "black",
                                         margin: "auto"
                                     }}/>
-                                    <Text style={{fontWeight: "bold", fontSize: 14, marginTop: 2, textAlign:"center"}}>Ale</Text>
-                                    <Text style={{color: "grey", fontSize:8, textAlign:"center"}}>(Daughter)</Text>
+                                    <Text style={{
+                                        fontWeight: "bold",
+                                        fontSize: 14,
+                                        marginTop: 2,
+                                        textAlign: "center"
+                                    }}>Ale</Text>
+                                    <Text style={{color: "grey", fontSize: 8, textAlign: "center"}}>(Daughter)</Text>
                                 </View>
-                                </View>
+                            </View>
                             <View style={{
                                 backgroundColor: "#FFF1E4",
                                 padding: 16,
@@ -188,11 +201,13 @@ export default function ViewBooking({route, navigation}) {
                             <View>
                                 <Text style={{marginTop: 20, fontWeight: "bold"}}>Note</Text>
                                 <Text style={{color: "grey"}}>Lorem Ipsum is simply dummy text of the printing and
-                                    typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since
-                                    the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
+                                    typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever
+                                    since
+                                    the 1500s, when an unknown printer took a galley of type and scrambled it to make a
+                                    type
                                     specimen book.</Text>
                             </View>
-                            <View style={{margin:10}}/>
+                            <View style={{margin: 10}}/>
                             <Button title={"Add note"} color={"#FFB906"}/>
                         </ScrollView>
                     </View>

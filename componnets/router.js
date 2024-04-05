@@ -47,15 +47,16 @@ class Router extends Component {
 
     static contextType = GlobalContext;
 
-    componentDidMount() {
-        this.getLocation();
-        this.authenticateUser();
+    async componentDidMount() {
+        await this.getLocation();
+        await this.authenticateUser();
     }
 
 
     getLocation = async () => {
         AsyncStorage.getItem('location')
             .then(async response => {
+                console.log(response, "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
                 if (!response) {
                     let {status} = await Location.requestForegroundPermissionsAsync();
                     if (status !== 'granted') {
@@ -92,6 +93,7 @@ class Router extends Component {
                 if (!r) {
                     this.setState({isAuthenticated: false, loading: false, tokenData: null});
                 } else {
+                    console.log('WHAT IS IN THE RRRRRRR', r);
                     dispatch({type: SET_USER_INFO, payload: r});
                     this.setState({isAuthenticated: true, loading: false, tokenData: JSON.parse(r)});
                 }

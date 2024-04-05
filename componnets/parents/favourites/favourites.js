@@ -5,14 +5,12 @@ import MainHeader from "../header/header";
 import {TextInput} from "react-native-paper";
 import FavouritesCaretakerProfile from "./FavouritesCaretakerProfile";
 import {GlobalContext} from "../../store";
-import {SET_ALL_REQUEST} from "../../store/const";
 
 export default function FavouriteCaretaker({route, navigation}) {
     const {headerName} = route.params;
     const [globalState, dispatch] = useContext(GlobalContext);
     const {allRequests} = globalState;
 
-    console.log(allRequests.length, "#########################3")
     return (
         <View style={[parentsStyling.container]}>
             <MainHeader headerName={headerName}/>
@@ -25,10 +23,14 @@ export default function FavouriteCaretaker({route, navigation}) {
                     />
                 }
 
+                {allRequests.length
+                    && allRequests.map((data, index) => {
+                        if (data.isFavourites) {
+                            return <FavouritesCaretakerProfile navigation={navigation} data={data} index={index}/>
+                        }
+                    })
 
-                {allRequests.length && allRequests.map((data, index) => {
-                    return <FavouritesCaretakerProfile data={data} index={index}/>
-                })}
+                }
             </View>
         </View>
     );

@@ -54,7 +54,7 @@ export default function ConfirmationBooking({route, navigation}) {
 
     }
 
-    console.log(reCallStatus)
+    console.log(data, "##############")
     return (
         <View style={[parentsStyling.container]}>
             <MainHeader isCaretaker={true} headerName={headerName}/>
@@ -91,13 +91,32 @@ export default function ConfirmationBooking({route, navigation}) {
                     </View>
 
                     <View style={{marginTop: 10}}/>
-                    <Text style={{fontWeight: "bold", marginTop: 10}}>Request Info</Text>
+                    <Text style={{fontWeight: "bold", marginTop: 10}}>Booking Info</Text>
 
                     <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                         <Text style={{color: "grey"}}>
-                            Booking Date:
+                            Booking From:
                         </Text>
-                        <Text style={{color: "#FF912C"}}>{data?.requestSendingTime}</Text>
+                        <Text style={{color: "#FF912C"}}>{data?.requestFrom}</Text>
+                    </View>
+                    <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                        <Text style={{color: "grey"}}>
+                            Booking To:
+                        </Text>
+                        <Text style={{color: "#FF912C"}}>{data?.requestTo}</Text>
+                    </View>
+                    <View><Text>{' '}</Text></View>
+                    <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                        <Text style={{color: "grey"}}>
+                            Booking Time From:
+                        </Text>
+                        <Text style={{color: "#FF912C"}}>{data?.startTime}</Text>
+                    </View>
+                    <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                        <Text style={{color: "grey"}}>
+                            Booking Time To:
+                        </Text>
+                        <Text style={{color: "#FF912C"}}>{data?.endTime}</Text>
                     </View>
                     {/*<Button title={"Location"}/>*/}
                 </View>

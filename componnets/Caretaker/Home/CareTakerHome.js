@@ -1,5 +1,15 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Button, ScrollView, Text, View, Image, TouchableOpacity, Alert, ActivityIndicator} from 'react-native';
+import {
+    Button,
+    ScrollView,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Alert,
+    ActivityIndicator,
+    RefreshControl
+} from 'react-native';
 import parentsStyling from "../../parents/parentsStyling";
 import MainHeader from "../../parents/header/header";
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -28,12 +38,13 @@ export default function CareTakerHome({navigation}) {
         loading: false
     })
 
+    const [refreshing, setRefreshing] = React.useState(false);
+
     useEffect(() => {
         if (!(bookingRequestsData?.length) || reCallStatus) {
             getBookings({acceptStatus: false})
         }
         if (!(upcomingRequestData?.length) || reCallStatus) {
-            console.log("Is API calling ......................................................")
             let filter = {
                 acceptStatus: true,
                 caretakerId: true
@@ -56,13 +67,15 @@ export default function CareTakerHome({navigation}) {
                             }
                             setState({...state, loading: false})
                             dispatch({type: SET_RE_CALLING_STATUS, payload: false})
-
+                            setRefreshing(false);
                         } else {
                             setState({...state, loading: false})
+                            setRefreshing(false);
                         }
                     })
                     .catch(error => {
                         setState({...state, loading: false})
+                        setRefreshing(false);
                     })
             })
     }
@@ -146,13 +159,14 @@ export default function CareTakerHome({navigation}) {
     const renderUpcomingBookings = () => {
         if (upcomingRequestData?.length) {
             return upcomingRequestData.map((val, index) => {
-                let {parentData: {name}, requestSendingTime} = val;
+                let {parentData: {name}, requestFrom, requestTo, _id} = val;
 
                 return <TouchableOpacity
                     style={{marginBottom: 10}}
                     key={index}
                     onPress={() => navigation.navigate('ViewBooking', {
-                        headerName: "Upcoming Booking"
+                        headerName: "Upcoming Booking",
+                        data:val
                     })}>
                     <View style={{
                         padding: 16,
@@ -173,6 +187,7 @@ export default function CareTakerHome({navigation}) {
                             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                                 <View>
                                     <Text style={{fontSize: 14, fontWeight: 'bold'}}>Upcoming Request</Text>
+                                    <Text style={{color: '#000'}}>{_id}</Text>
                                     <Text style={{color: "#FF912C", fontSize: 12, fontWeight: 'bold'}}>{name}</Text>
                                 </View>
                                 <Text style={{fontSize: 10, fontWeight: 'bold'}}>View</Text>
@@ -180,12 +195,12 @@ export default function CareTakerHome({navigation}) {
                             <View style={{flexDirection: 'row', gap: 4, alignItems: "center", marginTop: 10}}>
                                 <Ionicons color={'#FF912C'} size={14} name="time"/>
                                 <Text style={{color: '#727272'}}>From :</Text>
-                                <Text style={{color: '#727272'}}>{requestSendingTime}</Text>
+                                <Text style={{color: '#727272'}}>{requestFrom}</Text>
                             </View>
                             <View style={{flexDirection: 'row', gap: 4, alignItems: "center"}}>
                                 <Ionicons color={'#FF912C'} size={14} name="time"/>
                                 <Text style={{color: '#727272'}}>To :</Text>
-                                <Text style={{color: '#727272'}}>{requestSendingTime}</Text>
+                                <Text style={{color: '#727272'}}>{requestTo}</Text>
                             </View>
                         </View>
                     </View>
@@ -193,6 +208,12 @@ export default function CareTakerHome({navigation}) {
             })
         }
     }
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        dispatch({type: SET_BOOKING_REQUEST_DATA, payload: []})
+        dispatch({type: SET_UPCOMING_REQUEST_DATA, payload: []})
+    }, []);
 
     return (
         <View style={[parentsStyling.container]}>
@@ -247,7 +268,11 @@ export default function CareTakerHome({navigation}) {
                 }]}>
                     {
                         state.bookingSegmentValue === "new"
-                            ? <ScrollView style={{marginBottom:20}} showsVerticalScrollIndicator={false}>
+                            ? <ScrollView
+                                refreshControl={
+                                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+                                }
+                                style={{marginBottom: 20}} showsVerticalScrollIndicator={false}>
                                 <View style={[BottomSheetStyling.headingContainer, {backgroundColor: "white"}]}>
                                     <View style={{
                                         flexDirection: "row",
@@ -267,7 +292,11 @@ export default function CareTakerHome({navigation}) {
                                         : renderNewBookings()
                                 }
                             </ScrollView>
-                            : <ScrollView>
+                            : <ScrollView
+                                refreshControl={
+                                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+                                }
+                            >
                                 <View style={[BottomSheetStyling.headingContainer, {backgroundColor: "white"}]}>
                                     <View style={{
                                         flexDirection: "row",

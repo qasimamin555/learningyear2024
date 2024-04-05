@@ -75,7 +75,7 @@ export default function ChildBottomSheet(props) {
             </View>
             <View>
                 <Text style={{color: "#263238", fontWeight: "bold", marginTop: 4}}>{props?.childName}</Text>
-                <Text style={{color: "#FF912C"}}>{days + " days " + months + " months " + years + " years"}</Text>
+                <Text style={{color: "#FF912C"}}>{years + " years " +  months + " months " + days + " days "}</Text>
             </View>
         </View>
     </TouchableOpacity>
